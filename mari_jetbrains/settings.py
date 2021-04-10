@@ -23,9 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -113,6 +113,11 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+# Authorization data for VK API
+TOKEN = os.environ.get('TOKEN_VK_API')
+DOMAIN = 'tproger_web'
+VERSION = '5.130'
 
 
 # Static files (CSS, JavaScript, Images)

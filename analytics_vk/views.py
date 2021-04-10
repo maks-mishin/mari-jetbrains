@@ -1,10 +1,12 @@
 import csv
 import calendar
-import os
-import time
 from django.shortcuts import render
-import requests
 from datetime import datetime as dt, timedelta
+import os
+import requests
+import time
+
+from mari_jetbrains.settings import TOKEN, VERSION, DOMAIN
 
 
 def most_comments(request):
@@ -14,14 +16,12 @@ def most_comments(request):
     else:
         now = dt.now()
         count_days = calendar.monthrange(now.year, now.month)[1]
-        print("Count_days: ", count_days)
 
         date_from = (now - timedelta(days=now.day-1)).strftime('%d.%m.%Y')
         date_to = (now + timedelta(days=count_days - now.day)).strftime('%d.%m.%Y')
-        print(date_from, date_to)
 
     context = {}
-    comments = csv_reader('tproger_web')
+    comments = csv_reader('data_file')
 
     users_comments = {}
 
@@ -53,14 +53,12 @@ def unique_users(request):
     else:
         now = dt.now()
         count_days = calendar.monthrange(now.year, now.month)[1]
-        print("Count_days: ", count_days)
 
         date_from = (now - timedelta(days=now.day-1)).strftime('%d.%m.%Y')
         date_to = (now + timedelta(days=count_days - now.day)).strftime('%d.%m.%Y')
-        print(date_from, date_to)
 
     context = {}
-    comments = csv_reader('tproger_web')
+    comments = csv_reader('data_file')
 
     users_unique = {}
 
@@ -92,14 +90,12 @@ def comments_by_days(request):
     else:
         now = dt.now()
         count_days = calendar.monthrange(now.year, now.month)[1]
-        print("Count_days: ", count_days)
 
         date_from = (now - timedelta(days=now.day-1)).strftime('%d.%m.%Y')
         date_to = (now + timedelta(days=count_days - now.day)).strftime('%d.%m.%Y')
-        print(date_from, date_to)
 
     context = {}
-    comments = csv_reader('tproger_web')
+    comments = csv_reader('data_file')
 
     date_comments = {}
 
@@ -125,14 +121,6 @@ def comments_by_days(request):
 
 
 def get_comments(token: str, version: str, domain: str, count_posts) -> list:
-    """
-
-    :param token: token of VK API application
-    :param version: version of VK API
-    :param domain: short address of the community
-    :param count_posts: number of posts
-    :return: list of comments from the community
-    """
     offset = 0
     posts = []
     comments = []
@@ -153,8 +141,6 @@ def get_comments(token: str, version: str, domain: str, count_posts) -> list:
         offset += 100
         posts.extend(data)
         time.sleep(0.5)
-        print('Posts', len(posts))
-    #   =================== список всех постов сформирован ============
 
     # перебираем все посты
     for post in posts:
@@ -181,20 +167,10 @@ def get_comments(token: str, version: str, domain: str, count_posts) -> list:
             offset += 100
             comments.extend(data)
             time.sleep(0.2)
-            print('Comments', len(comments))
     return comments
 
 
-def get_likes():
-    pass
-
-
 def timestamp_to_date(date_timestamp):
-    """
-
-    :param date_timestamp: date in timestamp format
-    :return: date in utc format
-    """
     return dt.utcfromtimestamp(date_timestamp).strftime('%d.%m.%Y')
 
 
@@ -223,22 +199,15 @@ def csv_reader(filename: str) -> list:
 
 
 if __name__ == '__main__':
-    token = '48e587ba48e587ba48e587ba744892ba21448e548e587ba288eb70ac2421ceb8317b891'
-    version = '5.130'
-    domain = 'tproger_web'
-
     response = requests.get(
         'https://api.vk.com/method/wall.get',
         params={
-            'access_token': token,
-            'v': version,
-            'domain': domain
+            'access_token': TOKEN,
+            'v': VERSION,
+            'domain': DOMAIN
         }
     )
     count_posts_group = response.json()['response']['count']
+    comments = get_comments(TOKEN, VERSION, DOMAIN, count_posts_group)
 
-    # comments = get_comments(token, version, domain, count_posts_group)
-
-    # csv_writer(comments, 'tproger_web')
-    comments = csv_reader('tproger_web')
-    print(len(comments))
+    csv_writer(comments, 'data_file')
