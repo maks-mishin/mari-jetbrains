@@ -1,12 +1,13 @@
-import csv
 import calendar
-from django.shortcuts import render
-from datetime import datetime as dt, timedelta
-import os
-import requests
+import csv
 import time
+from datetime import datetime as dt
+from datetime import timedelta
 
-from mari_jetbrains.settings import TOKEN, VERSION, DOMAIN
+import requests
+from django.shortcuts import render
+
+from mari_jetbrains.settings import DOMAIN, TOKEN, VERSION
 
 
 def most_comments(request):
@@ -17,8 +18,12 @@ def most_comments(request):
         now = dt.now()
         count_days = calendar.monthrange(now.year, now.month)[1]
 
-        date_from = (now - timedelta(days=now.day-1)).strftime('%d.%m.%Y')
-        date_to = (now + timedelta(days=count_days - now.day)).strftime('%d.%m.%Y')
+        date_from = (
+            (now - timedelta(days=now.day-1)).strftime('%d.%m.%Y')
+        )
+        date_to = (
+            (now + timedelta(days=count_days - now.day)).strftime('%d.%m.%Y')
+        )
 
     context = {}
     comments = csv_reader('data_file')
@@ -54,8 +59,12 @@ def unique_users(request):
         now = dt.now()
         count_days = calendar.monthrange(now.year, now.month)[1]
 
-        date_from = (now - timedelta(days=now.day-1)).strftime('%d.%m.%Y')
-        date_to = (now + timedelta(days=count_days - now.day)).strftime('%d.%m.%Y')
+        date_from = (
+            (now - timedelta(days=now.day-1)).strftime('%d.%m.%Y')
+        )
+        date_to = (
+            (now + timedelta(days=count_days - now.day)).strftime('%d.%m.%Y')
+        )
 
     context = {}
     comments = csv_reader('data_file')
@@ -91,8 +100,12 @@ def comments_by_days(request):
         now = dt.now()
         count_days = calendar.monthrange(now.year, now.month)[1]
 
-        date_from = (now - timedelta(days=now.day-1)).strftime('%d.%m.%Y')
-        date_to = (now + timedelta(days=count_days - now.day)).strftime('%d.%m.%Y')
+        date_from = (
+            (now - timedelta(days=now.day-1)).strftime('%d.%m.%Y')
+        )
+        date_to = (
+            (now + timedelta(days=count_days - now.day)).strftime('%d.%m.%Y')
+        )
 
     context = {}
     comments = csv_reader('data_file')
@@ -142,12 +155,11 @@ def get_comments(token: str, version: str, domain: str, count_posts) -> list:
         posts.extend(data)
         time.sleep(0.5)
 
-    # перебираем все посты
     for post in posts:
         post_id = post['id']
         owner_id = post['owner_id']
 
-        comments_count = post['comments']['count']  # количество комментов конкретного поста
+        comments_count = post['comments']['count']
         offset = 0
 
         while offset < comments_count:
@@ -180,7 +192,11 @@ def csv_writer(comments: list, filename: str) -> None:
         a_pen.writerow(('id', 'from_id', 'date'))
         for comment in comments:
             try:
-                a_pen.writerow((comment['id'], comment['from_id'], timestamp_to_date(comment['date'])))
+                a_pen.writerow(
+                    comment['id'],
+                    comment['from_id'],
+                    timestamp_to_date(comment['date'])
+                )
             except KeyError:
                 continue
 

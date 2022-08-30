@@ -1,7 +1,6 @@
 from django.urls import path
 
-from analytics_vk.views import most_comments, \
-    unique_users, comments_by_days
+from analytics_vk.views import comments_by_days, most_comments, unique_users
 
 urlpatterns = [
     path('', comments_by_days, name='comments_by_days'),
